@@ -44,9 +44,11 @@ class Session
         if (empty($config)) {
             $config = Config::get('session');
         }
+		
         // 记录初始化信息
         App::$debug && Log::record('[ SESSION ] INIT ' . var_export($config, true), 'info');
         $isDoStart = false;
+		
         if (isset($config['use_trans_sid'])) {
             ini_set('session.use_trans_sid', $config['use_trans_sid'] ? 1 : 0);
         }
@@ -56,7 +58,7 @@ class Session
             ini_set('session.auto_start', 0);
             $isDoStart = true;
         }
-
+		
         if (isset($config['prefix']) && ('' === self::$prefix || null === self::$prefix)) {
             self::$prefix = $config['prefix'];
         }
@@ -65,6 +67,7 @@ class Session
         } elseif (isset($config['id']) && !empty($config['id'])) {
             session_id($config['id']);
         }
+		
         if (isset($config['name'])) {
             session_name($config['name']);
         }
@@ -78,6 +81,7 @@ class Session
             ini_set('session.gc_maxlifetime', $config['expire']);
             ini_set('session.cookie_lifetime', $config['expire']);
         }
+		
         if (isset($config['secure'])) {
             ini_set('session.cookie_secure', $config['secure']);
         }
@@ -102,12 +106,16 @@ class Session
                 throw new ClassNotFoundException('error session handler:' . $class, $class);
             }
         }
+		
         if ($isDoStart) {
+			
             session_start();
+			
             self::$init = true;
         } else {
             self::$init = false;
         }
+		
     }
 
     /**
@@ -160,8 +168,9 @@ class Session
      * @return mixed
      */
     public static function get($name = '', $prefix = null)
-    {
+    {	
         empty(self::$init) && self::boot();
+		
         $prefix = !is_null($prefix) ? $prefix : self::$prefix;
         if ('' == $name) {
             // 获取全部的session
